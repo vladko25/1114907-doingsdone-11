@@ -15,37 +15,37 @@ $array_tasks = [
     'name' => 'Собеседование в IT компании',
     'date' => '01.12.2019',
     'category' => $array_projects[2],
-    'control' => false
+    'done' => false
   ],
   [
     'name' => 'Выполнить тестовое задание',
     'date' => '25.12.2019',
     'category' => $array_projects[2],
-    'control' => false
+    'done' => false
   ],
   [
     'name' => 'Сделать задание первого раздела',
     'date' => '21.12.2019',
     'category' => $array_projects[1],
-    'control' => true
+    'done' => true
   ],
   [
     'name' => 'Встреча с другом',
     'date' => '22.12.2019',
     'category' => $array_projects[0],
-    'control' => false
+    'done' => false
   ],
   [
     'name' => 'Купить корм для кота',
     'date' => null,
     'category' => $array_projects[3],
-    'control' => false
+    'done' => false
   ],
   [
     'name' => 'Заказать пиццу',
     'date' => null,
     'category' => $array_projects[3],
-    'control' => false
+    'done' => false
   ]
 ];
 ?>
@@ -90,10 +90,10 @@ $array_tasks = [
                 <nav class="main-navigation">
 		    <ul class="main-navigation__list">
 			<?php if(isset($array_projects)): ?>
-			<?php foreach($array_projects as $id): ?>
+			<?php foreach($array_projects as $project_name): ?>
                         <li class="main-navigation__list-item">
 			<a class="main-navigation__list-item-link" href="pages/form-task.html">
-			<?php echo($id); ?>
+			<?php echo($project_name); ?>
 			</a>
                             <span class="main-navigation__list-item-count">0</span>
 			</li>
@@ -135,32 +135,31 @@ $array_tasks = [
                 </div>
 
                 <table class="tasks">
-		    <!--показывать следующий тег <tr/>, если переменная $show_complete_tasks равна единице-->
         <?php if(isset($array_tasks)): ?>
-          <?php foreach($array_tasks as $val): ?>
+          <?php foreach($array_tasks as $task_item): ?>
             <?php
-              if($val['control'] === true) {
+              if($task_item['done']) {
                 if(!$show_complete_tasks) {
                   continue;
                 }
               }
             ?>
         				<tr class="tasks__item task
-                <?php if($val['control'] === true): ?>
+                <?php if($task_item['done']): ?>
                   task--complete
                 <?php endif; ?>
                   ">
         					<td class="task__select">
         						<label class="checkbox task__checkbox">
         							<input class="checkbox__input visually-hidden" type="checkbox"
-                      <?php if($val['control'] === true): ?>
+                      <?php if($task_item['done']): ?>
                         checked
                       <?php endif; ?>
                       >
-        							<span class="checkbox__text"><?=$val['name']?></span>
+        							<span class="checkbox__text"><?=$task_item['name']?></span>
         						</label>
         					</td>
-        						<td class="task__date"><?=$val['date']?></td>
+        						<td class="task__date"><?=$task_item['date']?></td>
         						<td class="task__controls"></td>
         				</tr>
             <?php endforeach; ?>
