@@ -48,7 +48,21 @@ $array_tasks = [
     'done' => false
   ]
 ];
+
+function projectItemCount(array $project_list, $selected_project_name) {
+  $count = 0;
+  foreach ($project_list as $item_list) {
+    if ($item_list['category'] === $selected_project_name) {
+      $count++;
+    }
+  }
+  return $count;
+}
+
 ?>
+
+
+
 <!DOCTYPE html>
 <html lang="ru">
 
@@ -95,7 +109,9 @@ $array_tasks = [
 			<a class="main-navigation__list-item-link" href="pages/form-task.html">
 			<?php echo($project_name); ?>
 			</a>
-                            <span class="main-navigation__list-item-count">0</span>
+                            <span class="main-navigation__list-item-count">
+                              <?= projectItemCount($array_tasks, $project_name); ?>
+                            </span>
 			</li>
 			<?php endforeach; ?>
 			<?php endif; ?>
