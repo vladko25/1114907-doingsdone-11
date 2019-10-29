@@ -52,7 +52,7 @@ $array_tasks = [
 function projectItemCount(array $project_list, $selected_project_name) {
   $count = 0;
   foreach ($project_list as $item_list) {
-    if ($item_list['category'] == $selected_project_name) {
+    if ($item_list['category'] === $selected_project_name) {
       $count++;
     }
   }
@@ -110,10 +110,7 @@ function projectItemCount(array $project_list, $selected_project_name) {
 			<?php echo($project_name); ?>
 			</a>
                             <span class="main-navigation__list-item-count">
-                              <?php
-                              $item_count = projectItemCount($array_tasks, $project_name);
-                              echo $item_count;
-                              ?>
+                              <?= projectItemCount($array_tasks, $project_name); ?>
                             </span>
 			</li>
 			<?php endforeach; ?>
