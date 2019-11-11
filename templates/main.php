@@ -57,7 +57,10 @@
           ?>
           <tr class="tasks__item task
             <?php if($task_item['done']): ?>
-              task--complete
+              task--complete 
+            <?php endif; ?>
+            <?php if(hotTasks($task_item['date']) && $task_item['date'] != null): ?>
+              task--important
             <?php endif; ?>
           ">
             <td class="task__select">

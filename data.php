@@ -37,7 +37,7 @@ $array_tasks = [
   ],
   [
     'name' => 'Купить корм для кота',
-    'date' => null,
+    'date' => '12.11.2019',
     'category' => $array_projects[3],
     'done' => false
   ],
