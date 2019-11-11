@@ -59,7 +59,7 @@
             <?php if($task_item['done']): ?>
               task--complete 
             <?php endif; ?>
-            <?php if(hotTasks($task_item['date']) && $task_item['date'] != null): ?>
+            <?php if(hotTasks($task_item['date'])): ?>
               task--important
             <?php endif; ?>
           ">

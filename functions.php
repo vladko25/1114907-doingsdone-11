@@ -168,10 +168,12 @@ function hotTasks($task_date) {
     $hot_time = false;
     $current_date = time();
 
-    $diff = floor((strtotime($task_date)-$current_date)/3600);
+    if ($task_date != null) {
+        $diff = floor((strtotime($task_date)-$current_date)/3600);
 
-    if($diff <= 24) {
-        $hot_time = true;
+        if($diff <= 24) {
+            $hot_time = true;
+        }
     }
 
     return $hot_time;
