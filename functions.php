@@ -144,7 +144,7 @@ function include_template($name, array $data = []) {
 }
 
 /**
-* Подсчитывает количество задач в проекте (по категориям)
+* Подсчитывает количество задач в проекте
 * @param array $project_list Ассоциативный массив с задачами
 * @param string $selected_project_name Название проекта, в котором подсчитываем количество задач
 * @return int Количество задач в проекте
@@ -157,4 +157,24 @@ function projectItemCount(array $project_list, $selected_project_name) {
     }
   }
   return $count;
+}
+
+/**
+* Высчитывает оставшееся время до выполнения задачи и сравнивает полученное время с 24 часами
+* @param date $task_date Указанное в задаче время выполнения
+* @return bool Возвращает true, если кол-во часов до выполнения задачи меньше или равно 24
+ */
+function hotTasks($task_date) {
+    $hot_time = false;
+    $current_date = time();
+
+    if ($task_date != null) {
+        $diff = floor((strtotime($task_date)-$current_date)/3600);
+
+        if($diff <= 24) {
+            $hot_time = true;
+        }
+    }
+
+    return $hot_time;
 }
