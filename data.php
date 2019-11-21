@@ -1,50 +1,40 @@
 <?php
 // показывать или нет выполненные задачи
 $show_complete_tasks = rand(0, 1);
+$cur_user_id = rand(1, 3);
+$cur_user_name = '';
+$array_projects = [];
+$array_tasks = [];
+$tasks_count = 0;
+$error = '';
 
-$array_projects = [
-	"Входящие",
-	"Учёба",
-	"Работа",
-	"Домашние дела",
-	"Авто"
-];
+$con = mysqli_connect("localhost", "root", "","doingsdone");
+mysqli_set_charset($con, "utf8");
 
-$array_tasks = [
-  [
-    'name' => 'Собеседование в IT компании',
-    'date' => '01.12.2019',
-    'category' => $array_projects[2],
-    'done' => false
-  ],
-  [
-    'name' => 'Выполнить тестовое задание',
-    'date' => '25.12.2019',
-    'category' => $array_projects[2],
-    'done' => false
-  ],
-  [
-    'name' => 'Сделать задание первого раздела',
-    'date' => '21.12.2019',
-    'category' => $array_projects[1],
-    'done' => true
-  ],
-  [
-    'name' => 'Встреча с другом',
-    'date' => '22.12.2019',
-    'category' => $array_projects[0],
-    'done' => false
-  ],
-  [
-    'name' => 'Купить корм для кота',
-    'date' => '12.11.2019',
-    'category' => $array_projects[3],
-    'done' => false
-  ],
-  [
-    'name' => 'Заказать пиццу',
-    'date' => null,
-    'category' => $array_projects[3],
-    'done' => false
-  ]
-];
+if (!$con) {
+    $error = mysqli_connect_error();
+}
+else {
+    $sql = "SELECT user_name FROM users WHERE id = '$cur_user_id'";
+    $result = mysqli_query($con, $sql);
+    if ($result) {
+        $cur_user_name = mysqli_fetch_assoc($result);
+    }
+
+    $sql = "SELECT p.project_name, COUNT(t.id) AS tasks_count FROM projects p
+    JOIN tasks t ON p.id = t.project_id
+    WHERE t.user_id = '$cur_user_id' AND t.project_id = p.id
+    GROUP BY project_id";
+    $result = mysqli_query($con, $sql);
+    if ($result) {
+        $array_projects = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    }
+
+    $sql = "SELECT t.task_name, p.project_name, DATE_FORMAT(deadline, '%d.%m.%Y') AS deadline, status FROM tasks AS t
+    JOIN projects AS p USING(user_id)
+    WHERE t.user_id = '$cur_user_id' AND t.project_id = p.id";
+    $result = mysqli_query($con, $sql);
+    if ($result) {
+        $array_tasks = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    }
+}
