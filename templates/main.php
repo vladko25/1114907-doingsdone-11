@@ -5,8 +5,15 @@
       <ul class="main-navigation__list">
         <?php if(isset($array_projects)): ?>
           <?php foreach($array_projects as $project_name): ?>
-            <li class="main-navigation__list-item">
-              <a class="main-navigation__list-item-link" href="pages/form-task.html"><?=$project_name['project_name']; ?></a>
+            <li class="main-navigation__list-item
+              
+              <?php if (isset($_GET['id']) && ($_GET['id'] == $project_name['id'])): ?>
+                main-navigation__list-item--active
+              <?php endif; ?>
+            ">
+              <a class="main-navigation__list-item-link" href="../index.php?id=<?=$project_name['id'];?>">
+              <?=$project_name['project_name']; ?>
+              </a>
               <span class="main-navigation__list-item-count"><?=$project_name['tasks_count']; ?></span>
             </li>
           <?php endforeach; ?>
@@ -46,15 +53,17 @@
     </div>
 
     <table class="tasks">
-      <?php if(isset($array_tasks)): ?>
-        <?php foreach($array_tasks as $task_item): ?>
-          <?php
-            if($task_item['status']) {
-              if(!$show_complete_tasks) {
+      <?php
+        if(!count($array_tasks)):
+          echo $error;
+        else:
+          foreach($array_tasks as $task_item):
+            if($task_item['status']):
+              if(!$show_complete_tasks):
                 continue;
-              }
-            }
-          ?>
+              endif;
+            endif;
+      ?>
           <tr class="tasks__item task
             <?php if($task_item['status']): ?>
               task--complete 
