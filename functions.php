@@ -178,3 +178,37 @@ function hotTasks($task_date) {
 
     return $hot_time;
 }
+
+/**
+* Высчитывает оставшееся время до выполнения задачи и сравнивает полученное время с 24 часами
+* @param string $con Ресурс соединения
+* @param string $mysql_query Запрос SQL
+* @return array Возвращает записи из БД в виде ассоциативного массива
+ */
+function getRows($db_connect, $mysql_query) {
+    $result = mysqli_query($db_connect, $mysql_query);
+    if (!$result) {
+        $error = mysqli_error($db_connect);
+        print("Соединение не удалось: " . $error);
+        return false;
+    }
+    $result_array = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    return $result_array;
+}
+
+/**
+* Высчитывает оставшееся время до выполнения задачи и сравнивает полученное время с 24 часами
+* @param string $con Ресурс соединения
+* @param string $mysql_query Запрос SQL
+* @return array Возвращает запись из БД в виде ассоциативного массива
+ */
+function getRow($db_connect, $mysql_query) {
+    $result = mysqli_query($db_connect, $mysql_query);
+    if (!$result) {
+        $error = mysqli_error($db_connect);
+        print("Соединение не удалось: " . $error);
+        return false;
+    }
+    $result_array = mysqli_fetch_assoc($result);
+    return $result_array;
+}
