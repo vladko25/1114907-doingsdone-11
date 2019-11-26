@@ -149,12 +149,16 @@ function include_template($name, array $data = []) {
 * @param string $selected_project_name Название проекта, в котором подсчитываем количество задач
 * @return int Количество задач в проекте
  */
-function projectItemCount(array $project_list, $selected_project_name) {
+function projectItemCount($con, $selected_project_name, $cur_user_id) {
   $count = 0;
-  foreach ($project_list as $item_list) {
-    if ($item_list['category'] === $selected_project_name) {
-      $count++;
-    }
+  $project_list = getRows($con, 
+    "SELECT p.id, COUNT(t.id) AS tasks_count
+    FROM projects p
+    LEFT JOIN tasks t USING(user_id)
+    WHERE t.user_id = '$cur_user_id' AND p.id = t.project_id
+    GROUP BY p.id");
+  if (isset($project_list['tasks_count'])) {
+      $count = $project_list['tasks_count'];
   }
   return $count;
 }
@@ -177,4 +181,101 @@ function hotTasks($task_date) {
     }
 
     return $hot_time;
+}
+
+/**
+* Получает записи из БД по запросу
+* @param string $con Ресурс соединения
+* @param string $mysql_query Запрос SQL
+* @return array Возвращает записи из БД в виде многомерного массива
+ */
+function getRows($db_connect, $mysql_query) {
+    $result = mysqli_query($db_connect, $mysql_query);
+    if (!$result) {
+        $error = mysqli_error($db_connect);
+        print("Соединение не удалось: " . $error);
+        return false;
+    }
+    $result_array = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    return $result_array;
+}
+
+/**
+* Получает id, названия проектов и количество задач в этих проектах
+* @param string $con Ресурс соединения
+* @param int $user_id Значение id у текущего пользователя
+* @return array Возвращает id, названия проектов и количество задач в виде многомерного массива
+ */
+function getProjectsOfUser($db_connect, int $cur_user_id) {
+    $result_array = getRows($db_connect,
+        "SELECT p.id, p.project_name, count(t.id) AS tasks_count
+        FROM projects p
+        LEFT JOIN tasks t ON p.id = t.project_id
+        WHERE p.user_id = '$cur_user_id'
+        GROUP BY p.id, p.project_name"
+    );
+
+    return $result_array;
+}
+
+/**
+* Получает все задачи для текущего пользователя из БД
+* @param string $con Ресурс соединения
+* @param int $user_id Значение id у текущего пользователя
+* @return array Возвращает задачи для текущего пользователя в виде многомерного массива
+ */
+function getTasksOfUser($db_connect, int $cur_user_id) {
+    $array_tasks = getRows($db_connect,
+        "SELECT t.task_name, DATE_FORMAT(deadline, '%d.%m.%Y') AS deadline, status, u.user_name
+        FROM tasks t
+        JOIN projects p USING(user_id)
+        JOIN users u ON t.user_id = u.id
+        WHERE t.user_id = '$cur_user_id' AND t.project_id = p.id"
+    );
+
+    return $array_tasks;
+}
+
+/**
+* Получает задачи для выбранного проекта
+* @param string $con Ресурс соединения
+* @param int $user_id Значение id у текущего пользователя
+* @return array Возвращает задачи для выбранного проекта в виде многомерного массива
+ */
+function getTasksOfActiveProject($db_connect, int $cur_user_id, $get_id) {
+    $array_tasks = getRows($db_connect,
+        "SELECT * FROM tasks t 
+        JOIN projects p ON t.project_id = p.id
+        WHERE p.user_id = '$cur_user_id' AND p.id = '$get_id'"
+    );
+
+    return $array_tasks;
+}
+
+/**
+* Выводит контент через шаблонизатор
+* @param int $show_complete_tasks
+* @param array $projects Список отображаемых проектов
+* @param array $tasks Список отображаемых задач
+* @param string $user_name Имя текущего пользователя
+* @param string $error Сообщение об ошибке, необязательный параметр
+* @return Выводит на экран главную страницу с данными
+ */
+function getContent($show_complete_tasks, $projects, $tasks, $user_name, $error = "") {
+        $page_content = include_template('main.php', [
+            'show_complete_tasks' => $show_complete_tasks,
+            'array_projects' => $projects,
+            'array_tasks' => $tasks,
+            'error' => $error
+            ]
+        );
+
+        $layout_content = include_template('layout.php', [
+            'content' => $page_content,
+            'title' => 'Дела в порядке',
+            'cur_user_name' => $user_name
+            ]
+        );
+
+        print($layout_content);
 }
